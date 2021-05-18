@@ -3,26 +3,40 @@ package server
 import (
 	"github.com/asaskevich/govalidator"
 	"github.com/labstack/echo"
-	context2 "ict.com/project.v1/context"
 	request2 "ict.com/project.v1/request"
 	"ict.com/public.v1/utils"
 )
 
 func (s *Server) ProjectAddHandler(c echo.Context) error {
 	req := &request2.AddProjectRequest{}
+	_ = c.Bind(req)
 	ret, err := govalidator.ValidateStruct(req)
-	c.Bind(req)
-	cc := c.(context2.CustomContext)
-	ctx := cc.Request().Context()
+	//cc := c.(context2.CustomContext)
+	//ctx := cc.Request().Context()
 
 	if ret {
-		projectAddReplay, err2 := s.ProjectMgr.Add(ctx, req)
+		projectAddReplay, err2 := s.ProjectMgr.Add(req)
 		if err2 != nil {
-			return utils.ResponseErr(cc, err2)
+			return utils.ResponseErr(c, err2)
 		}
-		return utils.ResponseOk(cc, projectAddReplay)
+		return utils.ResponseOk(c, projectAddReplay)
 	}
-	return utils.ResponseErr(cc, err)
+	return utils.ResponseErr(c, err)
+}
+
+func (s *Server) ProjectDeleteHandler(c echo.Context) error {
+	req := &request2.DeleteProjectRequest{}
+	_ = c.Bind(req)
+	ret, err := govalidator.ValidateStruct(req)
+
+	if ret {
+		projectDeleteReplay, err2 := s.ProjectMgr.Delete(req)
+		if err2 != nil {
+			return utils.ResponseErr(c, err2)
+		}
+		return utils.ResponseOk(c, projectDeleteReplay)
+	}
+	return utils.ResponseErr(c, err)
 }
 
 func (s *Server) ProjectFindByIdHandler(c echo.Context) error {
@@ -41,4 +55,12 @@ func (s *Server) ProjectFindByIdHandler(c echo.Context) error {
 		return utils.ResponseOk(c, projectFindByIdReplay)
 	}
 	return utils.ResponseErr(c, err)
+}
+
+func (s *Server) ProjectFindAllHandler(c echo.Context) error {
+	return nil
+}
+
+func (s *Server) ProjectUpdateHandler(c echo.Context) error {
+	return nil
 }

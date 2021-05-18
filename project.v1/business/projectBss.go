@@ -1,7 +1,6 @@
 package business
 
 import (
-	"context"
 	"github.com/jinzhu/gorm"
 	"github.com/labstack/gommon/log"
 	"ict.com/project.v1/model"
@@ -12,15 +11,16 @@ import (
 )
 
 const (
-	PROJECT_STATUS = "status"
+	PROJECT_STATUS           = "status"
+	PROJECT_STATUS_CONDITION = "status =? "
 )
 
 type (
 	ProjectMgr interface {
-		Add(ctx context.Context, req *request.AddProjectRequest) (*response.Response, error)
-		Delete(ctx context.Context, req *request.DeleteProjectRequest) (*response.Response, error)
-		Update(ctx context.Context, req *request.UpdateProjectRequest) (*response.Response, error)
-		FindAll(ctx context.Context, req *request.FindAllProjectRequest) ([]model.Project, error)
+		Add(req *request.AddProjectRequest) (*response.Response, error)
+		Delete(req *request.DeleteProjectRequest) (*response.Response, error)
+		Update(req *request.UpdateProjectRequest) (*response.Response, error)
+		FindAll(req *request.FindAllProjectRequest) ([]model.Project, error)
 		FindById(req *request.FindProjectByIdRequest) (model.Project, error)
 	}
 
@@ -29,7 +29,7 @@ type (
 	}
 )
 
-func (p *ProjectBss) Add(ctx context.Context, req *request.AddProjectRequest) (*response.Response, error) {
+func (p *ProjectBss) Add(req *request.AddProjectRequest) (*response.Response, error) {
 	log.Info("into project add function...")
 	project := &model.Project{
 		Name:        req.Name,
@@ -55,7 +55,7 @@ func (p *ProjectBss) Add(ctx context.Context, req *request.AddProjectRequest) (*
 	return &response.Response{Code: 0, Message: "Success"}, nil
 }
 
-func (p *ProjectBss) Delete(ctx context.Context, req *request.DeleteProjectRequest) (*response.Response, error) {
+func (p *ProjectBss) Delete(req *request.DeleteProjectRequest) (*response.Response, error) {
 	log.Info("into project delete function")
 	pro := &model.Project{EntityModel: model2.EntityModel{ID: req.Id}}
 	if err := p.Conn.First(pro).Update(PROJECT_STATUS, utils.DISABLE).Error; err != nil {
@@ -64,7 +64,7 @@ func (p *ProjectBss) Delete(ctx context.Context, req *request.DeleteProjectReque
 	return &response.Response{Code: 0, Message: "Success"}, nil
 }
 
-func (p *ProjectBss) Update(ctx context.Context, req *request.UpdateProjectRequest) (*response.Response, error) {
+func (p *ProjectBss) Update(req *request.UpdateProjectRequest) (*response.Response, error) {
 	log.Info("into project Update function")
 
 	pro := &model.Project{
@@ -95,7 +95,7 @@ func (p *ProjectBss) Update(ctx context.Context, req *request.UpdateProjectReque
 	return &response.Response{Code: 0, Message: "Success"}, nil
 }
 
-func (p *ProjectBss) FindAll(ctx context.Context, req *request.FindAllProjectRequest) ([]model.Project, error) {
+func (p *ProjectBss) FindAll(req *request.FindAllProjectRequest) ([]model.Project, error) {
 	log.Info("into project FindAll function...")
 	var ret []model.Project
 	if err := p.Conn.Limit(req.Limit).Offset(req.Offset).Where(PROJECT_STATUS, utils.ACTIVE).Find(&ret).Error; err != nil {
@@ -107,7 +107,12 @@ func (p *ProjectBss) FindAll(ctx context.Context, req *request.FindAllProjectReq
 func (p *ProjectBss) FindById(req *request.FindProjectByIdRequest) (model.Project, error) {
 	log.Info("into project FindById function...")
 	pro := model.Project{EntityModel: model2.EntityModel{ID: req.Id}}
-	if err := p.Conn.First(&pro).Error; err != nil {
+	//ret := p.Conn.Where(PROJECT_STATUS_CONDITION, utils.ACTIVE)
+	//if ret != nil {
+	//	fmt.Println("xxxx")
+	//}
+	if err := p.Conn.Where(PROJECT_STATUS_CONDITION, utils.ACTIVE).First(&pro).Error; err != nil {
+		log.Info("查询信息:====>", err)
 		return model.Project{}, err
 	}
 	return pro, nil
