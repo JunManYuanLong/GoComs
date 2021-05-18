@@ -1,0 +1,5 @@
+{
+  "db_uri": "root:root123@(ip:3306)/ep-go?charset=utf8",
+  "db_type": "mysql",
+  "address": "0.0.0.0:15900"
+}
