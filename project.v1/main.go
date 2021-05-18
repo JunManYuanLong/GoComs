@@ -11,7 +11,7 @@ import (
 
 const (
 	CONF         = "f"
-	DEFAULT_CONF = "project.v1/config/prod.json"
+	DEFAULT_CONF = "project.v1/config/dev.json"
 	CONF_DES     = "conf path"
 )
 

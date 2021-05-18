@@ -20,8 +20,8 @@ type (
 		Add(ctx context.Context, req *request.AddProjectRequest) (*response.Response, error)
 		Delete(ctx context.Context, req *request.DeleteProjectRequest) (*response.Response, error)
 		Update(ctx context.Context, req *request.UpdateProjectRequest) (*response.Response, error)
-		FindAll(ctx context.Context, req *request.FindAllProjectRequest) (*response.FindAllProjectsResponse, error)
-		FindById(req *request.FindProjectByIdRequest) (*response.FindProjectByIdResponse, error)
+		FindAll(ctx context.Context, req *request.FindAllProjectRequest) ([]model.Project, error)
+		FindById(req *request.FindProjectByIdRequest) (model.Project, error)
 	}
 
 	ProjectBss struct {
@@ -95,22 +95,22 @@ func (p *ProjectBss) Update(ctx context.Context, req *request.UpdateProjectReque
 	return &response.Response{Code: 0, Message: "Success"}, nil
 }
 
-func (p *ProjectBss) FindAll(ctx context.Context, req *request.FindAllProjectRequest) (*response.FindAllProjectsResponse, error) {
+func (p *ProjectBss) FindAll(ctx context.Context, req *request.FindAllProjectRequest) ([]model.Project, error) {
 	log.Info("into project FindAll function...")
 	var ret []model.Project
 	if err := p.Conn.Limit(req.Limit).Offset(req.Offset).Where(PROJECT_STATUS, utils.ACTIVE).Find(&ret).Error; err != nil {
-		return &response.FindAllProjectsResponse{Code: 102, Message: "Error", Data: ret}, err
+		return ret, err
 	}
-	return &response.FindAllProjectsResponse{Code: 0, Message: "Success", Data: ret}, nil
+	return ret, nil
 }
 
-func (p *ProjectBss) FindById(req *request.FindProjectByIdRequest) (*response.FindProjectByIdResponse, error) {
+func (p *ProjectBss) FindById(req *request.FindProjectByIdRequest) (model.Project, error) {
 	log.Info("into project FindById function...")
 	pro := model.Project{EntityModel: model2.EntityModel{ID: req.Id}}
 	if err := p.Conn.First(&pro).Error; err != nil {
-		return &response.FindProjectByIdResponse{Code: 102, Message: "Error", Data: pro}, err
+		return model.Project{}, err
 	}
-	return &response.FindProjectByIdResponse{Code: 0, Message: "Success", Data: pro}, nil
+	return pro, nil
 }
 
 func NewProjectBss(dbUri string) (ProjectMgr, error) {

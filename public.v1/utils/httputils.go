@@ -46,9 +46,9 @@ var (
 
 func response(c echo.Context, code *Code, data interface{}, limit, offset int) error {
 	var realDate interface{}
-	if code.Code != 0 || data == nil {
+	if code.Code != 2000 || data == nil {
 		log.Printf("data is empty", realDate)
-		realDate = code
+		realDate = data
 	} else {
 		if v, ok := data.(map[string]interface{}); ok {
 			v["code"] = code.Code
