@@ -63,9 +63,11 @@ func configureHandler(s *Server) {
 	{
 		projectGroup := v.Group("/project")
 		configureMiddle(projectGroup, "project", s)
-		projectGroup.POST("/", s.ProjectFindByIdHandler)
+		projectGroup.POST("/", s.ProjectAddHandler)
 		projectGroup.DELETE("/:id", s.ProjectDeleteHandler)
-		//projectGroup.GET("path",s.Pro)
+		projectGroup.POST("/:id", s.ProjectUpdateHandler)
+		projectGroup.GET("/", s.ProjectFindAllHandler)
+		projectGroup.GET("/:id", s.ProjectFindByIdHandler)
 	}
 }
 

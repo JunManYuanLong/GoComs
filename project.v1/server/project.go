@@ -5,38 +5,38 @@ import (
 	"github.com/labstack/echo"
 	request2 "ict.com/project.v1/request"
 	"ict.com/public.v1/utils"
+	"strconv"
 )
+
+const PROJECT_ID string = "id"
 
 func (s *Server) ProjectAddHandler(c echo.Context) error {
 	req := &request2.AddProjectRequest{}
 	_ = c.Bind(req)
 	ret, err := govalidator.ValidateStruct(req)
-	//cc := c.(context2.CustomContext)
-	//ctx := cc.Request().Context()
 
 	if ret {
-		projectAddReplay, err2 := s.ProjectMgr.Add(req)
+		err2 := s.ProjectMgr.Add(req)
 		if err2 != nil {
 			return utils.ResponseErr(c, err2)
 		}
-		return utils.ResponseOk(c, projectAddReplay)
+		return utils.ResponseOk(c, "")
 	}
 	return utils.ResponseErr(c, err)
 }
 
 func (s *Server) ProjectDeleteHandler(c echo.Context) error {
+	pId, err := strconv.Atoi(c.Param(PROJECT_ID))
 	req := &request2.DeleteProjectRequest{}
-	_ = c.Bind(req)
-	ret, err := govalidator.ValidateStruct(req)
-
-	if ret {
-		projectDeleteReplay, err2 := s.ProjectMgr.Delete(req)
-		if err2 != nil {
-			return utils.ResponseErr(c, err2)
-		}
-		return utils.ResponseOk(c, projectDeleteReplay)
+	req.Id = pId
+	if err != nil {
+		return utils.ResponseErr(c, err)
 	}
-	return utils.ResponseErr(c, err)
+	err2 := s.ProjectMgr.Delete(req)
+	if err2 != nil {
+		return utils.ResponseErr(c, err2)
+	}
+	return utils.ResponseOk(c, "")
 }
 
 func (s *Server) ProjectFindByIdHandler(c echo.Context) error {

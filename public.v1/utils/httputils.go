@@ -71,6 +71,7 @@ func response(c echo.Context, code *Code, data interface{}, limit, offset int) e
 func responseValidate(c echo.Context, code govalidator.Errors) error {
 	realData := make(map[string]interface{})
 	realData["message"] = code.Error()
+	realData["code"] = http.StatusBadGateway
 	return c.JSON(http.StatusBadGateway, realData)
 
 }
