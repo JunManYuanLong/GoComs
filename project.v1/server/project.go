@@ -3,36 +3,35 @@ package server
 import (
 	"github.com/asaskevich/govalidator"
 	"github.com/labstack/echo"
+	"github.com/labstack/gommon/log"
+	"ict.com/project.v1/context"
 	request2 "ict.com/project.v1/request"
 	"ict.com/public.v1/utils"
 	"strconv"
 )
 
-const PROJECT_ID string = "id"
+const ProjectId string = "id"
 
 func (s *Server) ProjectAddHandler(c echo.Context) error {
 	req := &request2.AddProjectRequest{}
 	_ = c.Bind(req)
 	ret, err := govalidator.ValidateStruct(req)
-
 	if ret {
 		err2 := s.ProjectMgr.Add(req)
 		if err2 != nil {
 			return utils.ResponseErr(c, err2)
 		}
-		return utils.ResponseOk(c, "")
+		return utils.ResponseOk(c, nil)
 	}
 	return utils.ResponseErr(c, err)
 }
 
 func (s *Server) ProjectDeleteHandler(c echo.Context) error {
-	pId, err := strconv.Atoi(c.Param(PROJECT_ID))
-	req := &request2.DeleteProjectRequest{}
-	req.Id = pId
+	pId, err := strconv.Atoi(c.Param(ProjectId))
 	if err != nil {
 		return utils.ResponseErr(c, err)
 	}
-	err2 := s.ProjectMgr.Delete(req)
+	err2 := s.ProjectMgr.Delete(pId)
 	if err2 != nil {
 		return utils.ResponseErr(c, err2)
 	}
@@ -40,12 +39,13 @@ func (s *Server) ProjectDeleteHandler(c echo.Context) error {
 }
 
 func (s *Server) ProjectFindByIdHandler(c echo.Context) error {
+	pId, err := strconv.Atoi(c.Param(ProjectId))
+	if err != nil {
+		return utils.ResponseErr(c, err)
+	}
 	req := &request2.FindProjectByIdRequest{}
-	_ = c.Bind(req)
+	req.Id = pId
 	ret, err := govalidator.ValidateStruct(req)
-	//cc, err3 := c.(context2.CustomContext)
-	//fmt.Println(err3)
-	//ctx := cc.Request().Context()
 
 	if ret {
 		projectFindByIdReplay, err2 := s.ProjectMgr.FindById(req)
@@ -58,9 +58,24 @@ func (s *Server) ProjectFindByIdHandler(c echo.Context) error {
 }
 
 func (s *Server) ProjectFindAllHandler(c echo.Context) error {
-	return nil
+	cc := c.(*context.CustomContext)
+	pList, err := s.ProjectMgr.FindAll(cc.Limit, cc.Offset)
+	if err != nil {
+		return utils.ResponseErr(c, err)
+	}
+	log.Info(cc)
+	return utils.ResponseListOk(c, pList, cc.Limit, cc.Offset)
 }
 
 func (s *Server) ProjectUpdateHandler(c echo.Context) error {
-	return nil
+	req := &request2.UpdateProjectRequest{}
+	_ = c.Bind(req)
+	ret, err := govalidator.ValidateStruct(req)
+	if ret {
+		if err2 := s.ProjectMgr.Update(req); err2 != nil {
+			return utils.ResponseErr(c, err2)
+		}
+		return utils.ResponseOk(c, nil)
+	}
+	return utils.ResponseErr(c, err)
 }

@@ -7,6 +7,7 @@ import (
 	"github.com/labstack/echo/middleware"
 	"github.com/labstack/gommon/log"
 	"ict.com/project.v1/business"
+	middleware2 "ict.com/project.v1/middleware"
 )
 
 type (
@@ -54,6 +55,7 @@ func configureMiddle(group *echo.Group, opName string, s *Server) {
 		AllowMethods: []string{echo.GET, echo.DELETE, echo.POST, echo.OPTIONS, echo.PUT, echo.HEAD},
 		AllowHeaders: []string{echo.HeaderContentType, echo.HeaderAuthorization},
 	}))
+	group.Use(middleware2.ParamParse)
 	group.Use(middleware.Logger())
 	group.Use(middleware.Recover())
 }
@@ -65,7 +67,7 @@ func configureHandler(s *Server) {
 		configureMiddle(projectGroup, "project", s)
 		projectGroup.POST("/", s.ProjectAddHandler)
 		projectGroup.DELETE("/:id", s.ProjectDeleteHandler)
-		projectGroup.POST("/:id", s.ProjectUpdateHandler)
+		projectGroup.POST("/update", s.ProjectUpdateHandler)
 		projectGroup.GET("/", s.ProjectFindAllHandler)
 		projectGroup.GET("/:id", s.ProjectFindByIdHandler)
 	}

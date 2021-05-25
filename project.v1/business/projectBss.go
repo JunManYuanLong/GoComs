@@ -7,20 +7,21 @@ import (
 	"ict.com/project.v1/request"
 	model2 "ict.com/public.v1/model"
 	"ict.com/public.v1/utils"
+	"time"
 )
 
 const (
-	PROJECT_STATUS           = "status"
-	PROJECT_STATUS_CONDITION = "status =? "
+	ProjectStatus          = "status"
+	ProjectStatusCondition = "status =? "
 )
 
 type (
 	ProjectMgr interface {
 		Add(req *request.AddProjectRequest) error
-		Delete(req *request.DeleteProjectRequest) error
+		Delete(pId int) error
 		Update(req *request.UpdateProjectRequest) error
-		FindAll(req *request.FindAllProjectRequest) ([]model.Project, error)
-		FindById(req *request.FindProjectByIdRequest) (model.Project, error)
+		FindAll(limit, offset int) ([]model.Project, error)
+		FindById(req *request.FindProjectByIdRequest) (model.Project, *utils.Code)
 	}
 
 	ProjectBss struct {
@@ -31,6 +32,10 @@ type (
 func (p *ProjectBss) Add(req *request.AddProjectRequest) error {
 	log.Info("into project add function...")
 	project := &model.Project{
+		EntityModel: model2.EntityModel{
+			CreateTime: time.Now(),
+			UpdateTime: time.Now(),
+		},
 		Name:        req.Name,
 		Description: req.Description,
 		Logo:        req.Logo,
@@ -54,10 +59,10 @@ func (p *ProjectBss) Add(req *request.AddProjectRequest) error {
 	return nil
 }
 
-func (p *ProjectBss) Delete(req *request.DeleteProjectRequest) error {
+func (p *ProjectBss) Delete(pId int) error {
 	log.Info("into project delete function")
-	pro := &model.Project{EntityModel: model2.EntityModel{ID: req.Id}}
-	if err := p.Conn.First(pro).Update(PROJECT_STATUS, utils.DISABLE).Error; err != nil {
+	pro := &model.Project{EntityModel: model2.EntityModel{ID: pId}}
+	if err := p.Conn.First(pro).Update(ProjectStatus, utils.DISABLE).Error; err != nil {
 		return err
 	}
 	return nil
@@ -72,7 +77,7 @@ func (p *ProjectBss) Update(req *request.UpdateProjectRequest) error {
 		},
 	}
 	p.Conn.First(pro)
-	pro.Status = req.Status
+	pro.EntityModel.UpdateTime = time.Now()
 	pro.Name = req.Name
 	pro.Description = req.Description
 	pro.Logo = req.Logo
@@ -94,21 +99,22 @@ func (p *ProjectBss) Update(req *request.UpdateProjectRequest) error {
 	return nil
 }
 
-func (p *ProjectBss) FindAll(req *request.FindAllProjectRequest) ([]model.Project, error) {
+func (p *ProjectBss) FindAll(limit, offset int) ([]model.Project, error) {
 	log.Info("into project FindAll function...")
 	var ret []model.Project
-	if err := p.Conn.Limit(req.Limit).Offset(req.Offset).Where(PROJECT_STATUS, utils.ACTIVE).Find(&ret).Error; err != nil {
+	if err := p.Conn.Order("create_time DESC").Limit(limit).Offset(offset).Where(ProjectStatusCondition, utils.ACTIVE).Find(&ret).Error; err != nil {
+		log.Error(err)
 		return ret, err
 	}
 	return ret, nil
 }
 
-func (p *ProjectBss) FindById(req *request.FindProjectByIdRequest) (model.Project, error) {
+func (p *ProjectBss) FindById(req *request.FindProjectByIdRequest) (model.Project, *utils.Code) {
 	log.Info("into project FindById function...")
 	pro := model.Project{EntityModel: model2.EntityModel{ID: req.Id}}
-	if err := p.Conn.Where(PROJECT_STATUS_CONDITION, utils.ACTIVE).First(&pro).Error; err != nil {
+	if err := p.Conn.Where(ProjectStatusCondition, utils.ACTIVE).First(&pro).Error; err != nil {
 		log.Info("查询信息:====>", err)
-		return model.Project{}, err
+		return model.Project{}, utils.CodeRecordNotExist
 	}
 	return pro, nil
 }

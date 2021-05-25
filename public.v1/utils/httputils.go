@@ -32,6 +32,7 @@ func NewCode(code int, msg string) *Code {
 
 var (
 	CodeSucc               = NewCode(2000, "success")
+	CodeRecordNotExist     = NewCode(2000, "没有查询到记录")
 	CodeCreateErr          = NewCode(2001, "创建失败")
 	CodeUpdateErr          = NewCode(2002, "更新失败")
 	CodeSaveErr            = NewCode(2003, "保存失败")
@@ -44,28 +45,37 @@ var (
 	CodeLoginFailed        = NewCode(6002, "username or password wrong")
 )
 
-func response(c echo.Context, code *Code, data interface{}, limit, offset int) error {
-	var realDate interface{}
+func response(c echo.Context, code *Code, data interface{}, limit int, offset int) error {
+	var realData interface{}
 	if code.Code != 2000 || data == nil {
-		log.Printf("data is empty", realDate)
-		realDate = data
+		log.Printf("dataway data empty", realData)
+		realData = map[string]interface{}{
+			"code":    code.Code,
+			"message": code.Message,
+			"data":    data,
+		}
+		return c.JSON(http.StatusOK, realData)
 	} else {
 		if v, ok := data.(map[string]interface{}); ok {
 			v["code"] = code.Code
-			realDate = v
+			realData = v
 		} else {
-			realDate = map[string]interface{}{
+			realData = map[string]interface{}{
 				"code":    code.Code,
 				"message": code.Message,
 				"data":    data,
 			}
 			if limit != 0 || offset != 0 {
-				realDate.(map[string]interface{})["limit"] = limit
-				realDate.(map[string]interface{})["offset"] = offset
+				realData.(map[string]interface{})["limit"] = limit
+				realData.(map[string]interface{})["offset"] = offset
 			}
 		}
+		return c.JSON(http.StatusOK, realData)
 	}
-	return c.JSON(http.StatusOK, realDate)
+}
+
+func ResponseListOk(c echo.Context, data interface{}, limit int, offset int) error {
+	return response(c, CodeSucc, data, limit, offset)
 }
 
 func responseValidate(c echo.Context, code govalidator.Errors) error {
@@ -88,7 +98,8 @@ func ResponseErr(c echo.Context, err error) error {
 		return responseValidate(c, e)
 	}
 	realData := make(map[string]interface{})
-	realData["message"] = err
+	realData["message"] = err.Error()
+	realData["data"] = make(map[string]interface{})
 	realData["code"] = http.StatusServiceUnavailable
 	return c.JSON(http.StatusServiceUnavailable, realData)
 }

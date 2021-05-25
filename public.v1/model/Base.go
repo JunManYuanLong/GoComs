@@ -2,17 +2,9 @@ package model
 
 import "time"
 
-//type Base struct {
-//	ID         int       `gorm:"primaryKey;autoIncrement;unique" json:"id"`
-//	Status     int       `gorm:"not null"; default:0" json:"status"`
-//	CreateTime time.Time `json:"create_time"`
-//	UpdateTime time.Time `json:"update_time"`
-//	Ext        string    `json:"ext"`
-//}
-
 type EntityModel struct {
 	ID         int       `gorm:"primaryKey;autoIncrement;unique" json:"id"`
-	Status     int       `gorm:"not null"; default:0" json:"status"`
+	Status     int       `gorm:"not null; default:0" json:"status"`
 	CreateTime time.Time `json:"create_time"`
 	UpdateTime time.Time `json:"update_time"`
 	Ext        string    `json:"ext"`
@@ -20,7 +12,7 @@ type EntityModel struct {
 
 type EntityWithNameModel struct {
 	ID         int       `gorm:"primaryKey;autoIncrement;unique" json:"id"`
-	Status     int       `gorm:"not null"; default:0" json:"status"`
+	Status     int       `gorm:"not null; default:0" json:"status"`
 	CreateTime time.Time `json:"create_time"`
 	UpdateTime time.Time `json:"update_time"`
 	Ext        string    `json:"ext"`

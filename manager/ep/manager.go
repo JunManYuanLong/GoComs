@@ -35,7 +35,7 @@ func getDb() *gorm.DB {
 func createDb(c *cli.Context) error {
 	db := getDb()
 	fmt.Print(db)
-	db.CreateTable(model.Project{})
+	db.CreateTable(&model.Project{})
 	return nil
 }
 

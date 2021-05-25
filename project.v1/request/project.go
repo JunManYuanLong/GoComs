@@ -23,13 +23,12 @@ type (
 
 	UpdateProjectRequest struct {
 		Id          int     `json:"id" valid:"required"`
-		Status      int     `json:"status" valid:"required"`
 		Name        string  `json:"name" valid:"required"`
 		Description string  `json:"description"`
 		Logo        string  `json:"logo"`
-		Weight      int     `json:"weight" valid:"required"`
+		Weight      int     `json:"weight"`
 		Category    string  `json:"category"`
-		Level       int     `json:"level" valid:"required"`
+		Level       int     `json:"level"`
 		PM          int     `json:"pm"`
 		TD          int     `json:"td"`
 		Background  string  `json:"background"`
@@ -37,7 +36,7 @@ type (
 		Target      string  `json:"target"`
 		Milestone   string  `json:"milestone"`
 		Budget      float64 `json:"budget"`
-		IsShow      int     `json:"is_show" valid:"required"`
+		IsShow      int     `json:"is_show" `
 	}
 
 	FindAllProjectRequest struct {
