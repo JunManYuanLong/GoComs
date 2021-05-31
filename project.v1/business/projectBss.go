@@ -102,7 +102,7 @@ func (p *ProjectBss) Update(req *request.UpdateProjectRequest) error {
 func (p *ProjectBss) FindAll(limit, offset int) ([]model.Project, error) {
 	log.Info("into project FindAll function...")
 	var ret []model.Project
-	if err := p.Conn.Order("create_time DESC").Limit(limit).Offset(offset).Where(ProjectStatusCondition, utils.ACTIVE).Find(&ret).Error; err != nil {
+	if err := p.Conn.Order("id DESC").Limit(limit).Offset(offset).Where(ProjectStatusCondition, utils.ACTIVE).Find(&ret).Error; err != nil {
 		log.Error(err)
 		return ret, err
 	}

@@ -3,7 +3,7 @@ package middleware
 import (
 	"github.com/labstack/echo"
 	"github.com/satori/go.uuid"
-	"ict.com/project.v1/context"
+	"ict.com/public.v1/context"
 	"strconv"
 )
 

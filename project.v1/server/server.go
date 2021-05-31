@@ -7,7 +7,7 @@ import (
 	"github.com/labstack/echo/middleware"
 	"github.com/labstack/gommon/log"
 	"ict.com/project.v1/business"
-	middleware2 "ict.com/project.v1/middleware"
+	middleware2 "ict.com/public.v1/middleware"
 )
 
 type (

@@ -10,9 +10,9 @@ import (
 )
 
 const (
-	CONF         = "f"
-	DEFAULT_CONF = "project.v1/config/dev.json"
-	CONF_DES     = "conf path"
+	CONF        = "f"
+	DefaultConf = "project.v1/config/dev.json"
+	ConfDes     = "conf path"
 )
 
 type (
@@ -24,7 +24,7 @@ type (
 )
 
 func main() {
-	confPath := flag.String(CONF, DEFAULT_CONF, CONF_DES)
+	confPath := flag.String(CONF, DefaultConf, ConfDes)
 	flag.Parse()
 	c := Config{}
 	config.Load(*confPath, &c)
