@@ -1,7 +1,7 @@
 package model
 
 import (
-	"ict.com/public.v1/model"
+	"ict.com/public/model"
 )
 
 type AkSK struct {

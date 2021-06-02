@@ -5,8 +5,8 @@ import (
 	"github.com/labstack/gommon/log"
 	"ict.com/project.v1/model"
 	"ict.com/project.v1/request"
-	model2 "ict.com/public.v1/model"
-	"ict.com/public.v1/utils"
+	model2 "ict.com/public/model"
+	"ict.com/public/utils"
 	"time"
 )
 

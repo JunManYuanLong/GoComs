@@ -24,6 +24,10 @@ type (
 		GroupId int `json:"group_id"`
 	}
 
+	ParsePassword struct {
+		
+	}
+
 	UpdatePasswordRequest struct {
 		UserId      int    `json:"user_id"`
 		OldPassword string `json:"old_password"`

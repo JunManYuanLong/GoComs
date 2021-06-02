@@ -5,13 +5,13 @@ import (
 	"fmt"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
-	"ict.com/project.v1/config"
-	"ict.com/project.v1/server"
+	"ict.com/app/config"
+	server2 "ict.com/app/server"
 )
 
 const (
 	CONF        = "f"
-	DefaultConf = "project.v1/config/dev.json"
+	DefaultConf = "app/config/dev.json"
 	ConfDes     = "conf path"
 )
 
@@ -38,11 +38,11 @@ func main() {
 	db.SingularTable(true)
 	db.LogMode(true)
 
-	conf := &server.Config{
+	conf := &server2.Config{
 		Addr:  c.Address,
 		Db:    *db,
 		DbUri: c.DbUri,
 	}
-	s := server.NewServer(conf)
+	s := server2.NewServer(conf)
 	s.Start()
 }

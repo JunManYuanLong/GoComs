@@ -1,6 +1,6 @@
 package model
 
-import "ict.com/public.v1/model"
+import "ict.com/public/model"
 
 type User struct {
 	model.EntityModel

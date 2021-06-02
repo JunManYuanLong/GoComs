@@ -6,7 +6,7 @@ import (
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	"github.com/urfave/cli/v2"
 	"ict.com/project.v1/model"
-	model2 "ict.com/public.v1/model"
+	model2 "ict.com/public/model"
 	"os"
 	"time"
 )

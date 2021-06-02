@@ -6,8 +6,9 @@ import (
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
 	"github.com/labstack/gommon/log"
+	business2 "ict.com/auth.v1/business"
 	"ict.com/project.v1/business"
-	middleware2 "ict.com/public.v1/middleware"
+	middleware2 "ict.com/public/middleware"
 )
 
 type (
@@ -19,6 +20,7 @@ type (
 		Logger log.Logger
 
 		ProjectMgr business.ProjectMgr
+		UserMgr    business2.UserMgr
 	}
 
 	Config struct {
@@ -35,6 +37,10 @@ func NewServer(cfg *Config) *Server {
 	if err != nil {
 		log.Error("new project err:=>", err)
 	}
+	userMgr, err := business2.NewUserBss(cfg.DbUri)
+	if err != nil {
+		log.Error("new user err:=>", err)
+	}
 	s := &Server{
 		Addr:       cfg.Addr,
 		App:        *app,
@@ -42,6 +48,7 @@ func NewServer(cfg *Config) *Server {
 		DbUri:      cfg.DbUri,
 		Logger:     cfg.Logger,
 		ProjectMgr: projectMgr,
+		UserMgr:    userMgr,
 	}
 	s.Db.SingularTable(true)
 	s.Db.LogMode(true)
@@ -70,6 +77,20 @@ func configureHandler(s *Server) {
 		projectGroup.POST("/update", s.ProjectUpdateHandler)
 		projectGroup.GET("/", s.ProjectFindAllHandler)
 		projectGroup.GET("/:id", s.ProjectFindByIdHandler)
+	}
+	{
+		userGroup := v.Group("/user")
+		configureMiddle(userGroup, "user", s)
+		userGroup.POST("/", s.UserAddHandler)
+		userGroup.DELETE("/:id", s.UserDeleteHandler)
+		userGroup.POST("/update", s.UserUpdateHandler)
+		userGroup.GET("/", s.UserFindAllHandler)
+		userGroup.GET("/:id", s.UserFindByIdHandler)
+		userGroup.POST("/valid", s.UserIsValidHandler)
+		userGroup.POST("/parsepassword", s.ParsePasswordHandler)
+		userGroup.POST("/bindusergroup", s.UserBindUserGroupHandler)
+		userGroup.POST("/updatepassword", s.UpdatePasswordHandler)
+		userGroup.POST("/resetpassword", s.ResetPasswordHandler)
 	}
 }
 

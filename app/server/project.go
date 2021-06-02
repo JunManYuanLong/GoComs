@@ -5,8 +5,8 @@ import (
 	"github.com/labstack/echo"
 	"github.com/labstack/gommon/log"
 	request2 "ict.com/project.v1/request"
-	"ict.com/public.v1/context"
-	"ict.com/public.v1/utils"
+	"ict.com/public/context"
+	"ict.com/public/utils"
 	"strconv"
 )
 

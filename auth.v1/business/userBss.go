@@ -9,8 +9,8 @@ import (
 	"ict.com/auth.v1/config"
 	"ict.com/auth.v1/model"
 	"ict.com/auth.v1/request"
-	model2 "ict.com/public.v1/model"
-	"ict.com/public.v1/utils"
+	model2 "ict.com/public/model"
+	"ict.com/public/utils"
 	"time"
 )
 
@@ -24,16 +24,16 @@ const (
 
 type (
 	UserMgr interface {
-		Add(ctx context.Context, req request.AddUserRequest) error
+		Add(ctx context.Context, req *request.AddUserRequest) error
 		Delete(ctx context.Context, id int) error
-		Update(ctx context.Context, req request.UpdateUserRequest) error
+		Update(ctx context.Context, req *request.UpdateUserRequest) error
 		FindAll(ctx context.Context, limit int, offset int) ([]model.User, error)
 		FindById(ctx context.Context, id int) (model.User, error)
 		IsValid(ctx context.Context, username string, password string) (int, bool)
 		ParsePassword(ctx context.Context, password string) string
-		BindUserGroup(ctx context.Context, req request.UserBindGroupRequest) error
-		UpdatePassword(ctx context.Context, req request.UpdatePasswordRequest) error
-		ResetPassword(ctx context.Context, req request.ResetPasswordRequest) error
+		BindUserGroup(ctx context.Context, req *request.UserBindGroupRequest) error
+		UpdatePassword(ctx context.Context, req *request.UpdatePasswordRequest) error
+		ResetPassword(ctx context.Context, req *request.ResetPasswordRequest) error
 	}
 
 	UserBss struct {
@@ -41,7 +41,7 @@ type (
 	}
 )
 
-func (u *UserBss) Add(ctx context.Context, req request.AddUserRequest) error {
+func (u *UserBss) Add(ctx context.Context, req *request.AddUserRequest) error {
 	user := &model.User{EntityModel: model2.EntityModel{
 		CreateTime: time.Now(),
 		UpdateTime: time.Now(),
@@ -69,7 +69,7 @@ func (u *UserBss) Delete(_ context.Context, id int) error {
 	return nil
 }
 
-func (u *UserBss) Update(_ context.Context, req request.UpdateUserRequest) error {
+func (u *UserBss) Update(_ context.Context, req *request.UpdateUserRequest) error {
 	user := &model.User{
 		EntityModel: model2.EntityModel{
 			ID: req.Id,
@@ -121,11 +121,11 @@ func (u *UserBss) ParsePassword(_ context.Context, password string) string {
 	return fmt.Sprintf("x%", md5.Sum([]byte(config.Salt+password)))
 }
 
-func (u *UserBss) BindUserGroup(_ context.Context, req request.UserBindGroupRequest) error {
+func (u *UserBss) BindUserGroup(_ context.Context, req *request.UserBindGroupRequest) error {
 	return nil
 }
 
-func (u *UserBss) UpdatePassword(ctx context.Context, req request.UpdatePasswordRequest) error {
+func (u *UserBss) UpdatePassword(ctx context.Context, req *request.UpdatePasswordRequest) error {
 	user := model.User{
 		EntityModel: model2.EntityModel{
 			ID: req.UserId,
@@ -146,7 +146,7 @@ func (u *UserBss) UpdatePassword(ctx context.Context, req request.UpdatePassword
 	return nil
 }
 
-func (u *UserBss) ResetPassword(ctx context.Context, req request.ResetPasswordRequest) error {
+func (u *UserBss) ResetPassword(ctx context.Context, req *request.ResetPasswordRequest) error {
 	user := model.User{
 		EntityModel: model2.EntityModel{
 			ID: req.UserId,
